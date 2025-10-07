@@ -161,6 +161,25 @@ public:
         delete delNode;
     }
 
+    void deleteByValue(int val) {
+            Node *temp = head, *prev = nullptr;
+            while (temp && temp->data != val) {
+            prev = temp;
+            temp = temp->next;
+            }
+            if (!temp) {
+            cout << "Node with value \"" << val << "\" not found.\n";
+            return;
+            }
+            if (!prev) { // deleting head
+            head = head->next;
+            } else {
+            prev->next = temp->next;
+            }
+            delete temp;
+            cout << "Deleted: " << val << endl;
+        }
+
     // ----- SEARCH -----
     bool search(int key) {
         Node* temp = head;

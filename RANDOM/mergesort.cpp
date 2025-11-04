@@ -3,7 +3,7 @@ using namespace std;
 
 void merge(int mymarra[], int l, int m, int r){
     int i = l, j = m + 1, k = l;
-    int temp[5];
+    int temp[r - l + 1];
     while(i <= m && j <= r){
         if(mymarra[i] < mymarra[j]){
             temp[k++] = mymarra[i++];

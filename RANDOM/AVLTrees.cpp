@@ -81,19 +81,115 @@ class AVLTree {
             return node;
         }
 
+        void AVLsearch(Node* node, int key) {
+            if (node == nullptr) {
+                cout << "Key " << key << " not found in the AVL tree." << endl;
+                return;
+            }
+            if (key == node->data) {
+                cout << "Key " << key << " found in the AVL tree." << endl;
+                return;
+            }
+            if (key < node->data)
+                AVLsearch(node->left, key);
+            else
+                AVLsearch(node->right, key);
+        }
+
+        Node* deleteNode(Node* root, int key) {
+            if (root == nullptr)
+                return root;
+
+            if (key < root->data)
+                root->left = deleteNode(root->left, key);
+            else if (key > root->data)
+                root->right = deleteNode(root->right, key);
+            else {
+                if ((root->left == nullptr) || (root->right == nullptr)) {
+                    Node* temp = root->left ? root->left : root->right;
+
+                    if (temp == nullptr) {
+                        temp = root;
+                        root = nullptr;
+                    } else
+                        *root = *temp;
+                    delete temp;
+                } else {
+                    Node* temp = minValueNode(root->right);
+                    root->data = temp->data;
+                    root->right = deleteNode(root->right, temp->data);
+                }
+            }
+
+            if (root == nullptr)
+                return root;
+
+            height(root);
+
+            int balance = getBalance(root);
+
+            // left left
+            if (balance > 1 && getBalance(root->left) >= 0)
+                return rightRotate(root);
+
+            // left right
+            if (balance > 1 && getBalance(root->left) < 0) {
+                root->left = leftRotate(root->left);
+                return rightRotate(root);
+            }
+
+            // right right
+            if (balance < -1 && getBalance(root->right) <= 0)
+                return leftRotate(root);
+
+            // right left
+            if (balance < -1 && getBalance(root->right) > 0) {
+                root->right = rightRotate(root->right);
+                return leftRotate(root);
+            }
+
+            return root;
+        }
+
+        void preOrder(Node* root) {
+            if (root != nullptr) {
+                cout << root->data << " ";
+                preOrder(root->left);
+                preOrder(root->right);
+            }
+        }
+
+        Node* minValueNode(Node* node) {
+            Node* current = node;
+            while (current && current->left != nullptr)
+                current = current->left;
+            return current;
+        }
 };
 
 int main() {
     AVLTree tree;
-    tree.root = new Node(10);
-    tree.root = new Node(20);
-    tree.root = new Node(30);
-    tree.root = new Node(40);
-    tree.root = new Node(50);
-    tree.root = tree.insert(tree.root, 15);
+    int keys[] = {10, 20, 30, 40, 50, 15};
+    for (int i = 0; i < 6; ++i) {
+        tree.root = tree.insert(tree.root, keys[i]);
+        cout << "Balance: " << tree.getBalance(tree.root) << endl;
+        tree.preOrder(tree.root);
+        cout << endl;
+    }
+    cout << "\nHeight of Avl tree: " << tree.height(tree.root) << endl;
+    cout << endl;
+    
+    tree.AVLsearch(tree.root, 25);
+    cout << endl;
+
+    cout << "Preorder traversal before deletion:" << endl;
+    tree.preOrder(tree.root);
+    tree.root = tree.deleteNode(tree.root, 20);
+    cout << "\nPreorder traversal after deletion of 20:" << endl;
+    tree.preOrder(tree.root);
+
 
     return 0;
-
 }
 
 
